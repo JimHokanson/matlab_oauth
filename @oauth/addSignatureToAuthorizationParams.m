@@ -1,4 +1,4 @@
-function debugStruct = getSignature(obj)
+function debugStruct = addSignatureToAuthorizationParams(obj)
 %oauth_getSignature  Adds signature to authorization parameters
 %
 %   Implements Section 3.4 of Oauth 1.0 Specification   
@@ -20,7 +20,7 @@ function debugStruct = getSignature(obj)
 
 baseString = createBaseString(obj);
 
-cSecret = obj.consumer_secret;
+cSecret = obj.consumer_authorization.secret;
 tSecret = obj.token_secret;
 
 keyString   = [oauth.percentEncodeString(cSecret) '&' oauth.percentEncodeString(tSecret)];
@@ -28,7 +28,7 @@ debugStruct = struct('baseString',baseString,'keyString',keyString);
 
 %Signing 
 %--------------------------------------------------------------------
-switch obj.opt_signature_method
+switch obj.options.signature_method
     case 'HMAC-SHA1'
         javaEncodingName = 'HmacSHA1';
         signingKey = javax.crypto.spec.SecretKeySpec(uint8(keyString),javaEncodingName);
@@ -43,7 +43,7 @@ end
 
 %Adding signature to params
 %-----------------------------------------------------
-addOauthSignature(obj.auth_params,signature)
+addOauthSignature(obj.authorization_parameters,signature)
 
 
 

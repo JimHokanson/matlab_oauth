@@ -39,12 +39,18 @@ function baseString = createBaseString(obj)
 %
 %   http://tools.ietf.org/html/rfc5849#section-3.4.1.1
 
+%NOTE: I really don't like the lack of encapsulation here
+%TODO: Fix this somehow ...
+
 %Parameter retrieval
 %------------------------------------------------------------
-params = [obj.auth_params.params obj.user_params.params];
-
+params = [obj.authorization_parameters.internal_parameters obj.user_parameters.internal_parameters];
 
 %Creation of the base string
 %----------------------------------------------------
-baseString = oauth_params.normalizeParams(params);
-baseString = [obj.http_method '&' oauth.percentEncodeString(obj.url) '&' oauth.percentEncodeString(baseString)];
+baseString = oauth.params.normalizeParams(params);
+
+http_method = obj.urlread_request.http_method;
+url         = obj.urlread_request.url;
+
+baseString = [http_method '&' oauth.percentEncodeString(url) '&' oauth.percentEncodeString(baseString)];

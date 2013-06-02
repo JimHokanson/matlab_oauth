@@ -6,7 +6,7 @@ function header = getAuthorizationHeader(obj)
 %   Requires signature already be included
 
 
-params = obj.params;
+params = obj.internal_parameters;
 %Implementation of 3.5.1
 if ~isempty(params)
     authHeader = '';
