@@ -1,23 +1,17 @@
-classdef params < handle
-    %oauth_params
+classdef params < oauth.handle_light
+    %params
     %
-    %   This class handles manipulation of parameters
+    %   This class handles manipulation of oauth parameters
     %
-    %   For a general overview of usage of this class
-    %   see the documentation with the oauth class
-    %
-    %   Parameters are simply a cell array vector. The cell array consists
-    %   of property/value pairs. Properties MUST be strings and values
-    %   should generally be strings although numbers are sometimes allowed
-    %   (see optional properties)
-    
-    
+    %   Class:
+    %   oauth.params
+
     properties (SetAccess = protected)
-        internal_parameters = {};
+        internal_parameters = {}; %(cell array) Property/Value pairs
     end
     
     properties (Hidden)
-        parent %pointer to oauth object
+        parent %Class: oauth
     end
     
     methods (Access = private)
@@ -90,7 +84,7 @@ classdef params < handle
     %Parent object access methods =========================================
     methods (Hidden)
         function consumer_key = getConsumerKey(obj)
-            consumer_key = obj.parent.consumer_authorization.key;
+            consumer_key = obj.parent.credentials.consumer_key;
         end
         function signature_method = getSignatureMethod(obj)
             signature_method = obj.parent.options.signature_method;
@@ -102,72 +96,20 @@ classdef params < handle
             nonce = obj.parent.getNonce;
         end
         function token = getToken(obj)
-            token = obj.parent.token;
+            token = obj.parent.credentials.token;
             if isempty(token)
                 error('Request made for token, but token is empty')
             end
         end
     end
-    
-% % % % %     %Initializaton Methods
-% % % % %     %======================================================================
-% % % % %     methods (Static)
-% % % % %         %         function obj = init_request_auth_params(oauth_obj)
-% % % % %         %             obj = oauth_params(oauth_obj);
-% % % % %         %             obj.params = {...
-% % % % %         %                 'oauth_consumer_key'        oauth_obj.consumer_key ...
-% % % % %         %                 'oauth_signature_method'    oauth_obj.opt_signature_method ...
-% % % % %         %                 'oauth_timestamp'           oauth_obj.getTimestamp ...
-% % % % %         %                 'oauth_nonce'               oauth_obj.getNonce ...
-% % % % %         %                 'oauth_callback'        'oob'};
-% % % % %         %
-% % % % %         %         end
-% % % % %         %         function obj = init_access_auth_params(oauth_obj,verifier)
-% % % % %         %             obj = oauth_params(oauth_obj);
-% % % % %         %             if isempty(oauth_obj.oauth_request_token)
-% % % % %         %                 error('The request token is empty, getRequestToken() call needed')
-% % % % %         %             end
-% % % % %         %             obj.params = {...
-% % % % %         %                 'oauth_consumer_key'        oauth_obj.consumer_key ...
-% % % % %         %                 'oauth_token'               oauth_obj.oauth_request_token ...
-% % % % %         %                 'oauth_signature_method'    oauth_obj.opt_signature_method ...
-% % % % %         %                 'oauth_timestamp'           oauth_obj.getTimestamp ...
-% % % % %         %                 'oauth_nonce'               oauth_obj.getNonce ...
-% % % % %         %                 'oauth_verifier'            verifier};
-% % % % %         %         end
-% % % % %         function obj = init_general_auth_params(oauth_obj)
-% % % % %             obj = oauth_params(oauth_obj);
-% % % % %             
-% % % % %             if oauth_obj.is_public_request
-% % % % %                 access_line = {};
-% % % % %             else
-% % % % %                 if isempty(oauth_obj.oauth_access_token)
-% % % % %                     error('The access token is empty, getAccessToken() or different constructor call needed')
-% % % % %                 end
-% % % % %                 access_line = {'oauth_token'	oauth_obj.oauth_access_token};
-% % % % %             end
-% % % % %             obj.params = [...
-% % % % %                 'oauth_consumer_key'        oauth_obj.consumer_key ...
-% % % % %                 access_line ... %Might be empty if public
-% % % % %                 'oauth_signature_method'    oauth_obj.opt_signature_method ...
-% % % % %                 'oauth_timestamp'           oauth_obj.getTimestamp ...
-% % % % %                 'oauth_nonce'               oauth_obj.getNonce];
-% % % % %         end
-% % % % %         function obj = init_user_params(oauth_obj,params)
-% % % % %             %init_user_params
-% % % % %             obj = oauth_params(oauth_obj);
-% % % % %             if exist('params','var')
-% % % % %                 addParams(obj,params);
-% % % % %             end
-% % % % %         end
-% % % % %     end
-    
 
-    
     methods
         function params = getParams(obj)
             %getParams Returns parameters of object
             %??? - who uses this, why?????
+            %
+            %   NOTE: The parent should use this (or really a merge)
+            %   but it isn't currently ...
             params = obj.params;
         end
     end

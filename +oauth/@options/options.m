@@ -5,8 +5,10 @@ classdef options < handle_light
     %   
         
     properties
-        signature_method         = 'HMAC-SHA1';
+        signature_method           = 'HMAC-SHA1';
         http_param_encoding_option = 2; %See http_paramsToString
+        %
+        %
         
         %OAUTH_PARAMS RELATED
         %------------------------------------------------------------------
@@ -16,7 +18,16 @@ classdef options < handle_light
         number_to_string_fhandle = @int2str; %Function used to convert #s to string
         convert_params_to_utf8   = true; 
         
-        urlread_options
+        %urlread 
+        %------------------------------------------------------------------
+        urlread_options  %Class: oauth.urlread_options
+        
+        %oauth.urlread_response
+        %------------------------------------------------------------------
+        parse_content_type = true  %If false the content will not be parsed
+        %even if a content-type is specified
+        populate_raw       = true  %If false, then the hidden property
+        %'raw' will not be populated (could save memory)
     end
     
     properties

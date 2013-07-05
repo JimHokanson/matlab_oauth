@@ -12,7 +12,7 @@ classdef urlread_request < handle_light
         url
         http_method
              
-        options
+        oauth_options %Class: oauth.options
         %TODO: allow additional options to go here?????
     end
     
@@ -23,10 +23,18 @@ classdef urlread_request < handle_light
     end
     
     methods
-        function obj = urlread_request(url,http_method,options)
+        function obj = urlread_request(url,http_method,oauth_options)
+            %
+            %
+            %   obj = urlread_request(url,http_method,options)
+            %
+            %   INPUTS
+            %   ===========================================================
+            %   See properties ...
+            
             obj.url         = url;
             obj.http_method = http_method;
-            obj.options     = options;
+            obj.oauth_options     = oauth_options;
         end
         function response = makeRequest(obj,user_parameters_obj,authorization_header)
             %
@@ -49,11 +57,11 @@ classdef urlread_request < handle_light
                 headers = [header obj.auth_header];
             end
             
-            s = obj.options.getStruct;
+            s = obj.oauth_options.urlread_options.getStruct;
             
             [output,extras] = oauth.s.urlread2(final_url,obj.http_method,body,headers,s);
             
-            response = oauth.urlread_response(output,extras);
+            response = oauth.urlread_response(output,extras,obj.oauth_options);
         end
     end
     

@@ -20,8 +20,8 @@ function debugStruct = addSignatureToAuthorizationParams(obj)
 
 baseString = createBaseString(obj);
 
-cSecret = obj.consumer_authorization.secret;
-tSecret = obj.token_secret;
+cSecret = obj.credentials.consumer_secret;
+tSecret = obj.credentials.token_secret;
 
 keyString   = [oauth.percentEncodeString(cSecret) '&' oauth.percentEncodeString(tSecret)];
 debugStruct = struct('baseString',baseString,'keyString',keyString);            

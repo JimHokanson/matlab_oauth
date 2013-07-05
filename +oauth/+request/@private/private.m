@@ -1,17 +1,20 @@
 classdef private < oauth
+    %private Class for making private (user specific) oauth requests
     %
     %   Class:
     %   oauth.request.private   
     
     methods
-        function obj = private(consumer_authorization,access_token,access_token_secret)
+        function obj = private(private_creds)
+           %private 
            %
+           %    obj = private(private_creds)
            %
-           %
+           %    INPUTS
+           %    =================================================
+           %    private_creds
            
-           obj.consumer_authorization = consumer_authorization;
-           obj.token        = access_token;
-           obj.token_secret = access_token_secret;
+           obj@oauth(private_creds);
         end
         function r = makeRequest(obj,url,http_method,user_parameters,options)
            obj.options = options;
