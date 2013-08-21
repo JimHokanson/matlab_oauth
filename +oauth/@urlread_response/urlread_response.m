@@ -1,4 +1,4 @@
-classdef urlread_response < handle_light
+classdef urlread_response < sl.obj.handle_light
     %
     %   
     %   Class:
@@ -28,7 +28,7 @@ classdef urlread_response < handle_light
                        obj.response = oauth.s.parse_json(response_str);
                    case 'application/x-www-form-urlencoded'
                        %oauth_callback_accepted=1&oauth_token=2b60638f8425bee5098fea00284ce0f3051ab92f3&oauth_token_secret=54a2fe1c2436f29faea687b3fcecad87&xoauth_token_ttl=3600
-                       obj.response = http_queryStringToParams(response_str);
+                       obj.response = sl.web.http.queryStringToParams(response_str);
                    otherwise
                        obj.response = response_str;
                end
@@ -38,6 +38,11 @@ classdef urlread_response < handle_light
             
             obj.extras = extras;
             
+        end
+        function checkStatus(obj,value_to_match)
+           if obj.status_value ~= value_to_match
+              error('Status Match Error: match value %d ~=  status value %d',value_to_match,obj.status_value)
+           end
         end
     end
     

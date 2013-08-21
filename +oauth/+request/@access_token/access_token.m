@@ -2,6 +2,8 @@ classdef access_token < oauth
     %
     %   Class:
     %   oauth.request.access_token   
+    %
+    %   Class for requesting an access token ...
     
     methods
         function obj = access_token(consumer_authorization,request_token)

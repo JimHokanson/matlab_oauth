@@ -240,11 +240,10 @@ classdef params < handle
             %   oauth.opt_http_param_encoding_option
             %
             %   See Also:
-            %   http_paramsToString
+            %   sl.web.http.paramsToString
             %   oauth.make_basic_url_request
             
-            %TODO: Make this local ...
-            [str,header] = http_paramsToString(obj.internal_parameters,obj.parent.options.http_param_encoding_option);
+            [str,header] = sl.web.http.paramsToString(obj.internal_parameters,obj.parent.options.http_param_encoding_option);
         end
     end
     

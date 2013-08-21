@@ -148,11 +148,12 @@ com.mathworks.mlwidgets.html.HTMLPrefs.setProxySettings %Proxy settings need to 
 %-----------------------------------
 urlConnection = getURLConnection(urlChar);
 
-if in.USE_COOKIES
-   cookies.enable;
-else
-   cookies.disable;
-end
+%??? What was this ????
+% if in.USE_COOKIES
+%    cookies.enable;
+% else
+%    cookies.disable;
+% end
 
 %For HTTP uses sun.net.www.protocol.http.HttpURLConnection
 %Might use ice.net.HttpURLConnection but this has more overhead

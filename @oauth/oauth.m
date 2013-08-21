@@ -62,7 +62,7 @@ classdef oauth  < handle
     properties
         %Constructor
         %---------------------------------------------------
-        consumer_authorization   %Class: oauth.consumer_auth
+        consumer_authorization   %oauth.consumer_auth
         token            %(string) Optional, only needed with private request or access_token request
         token_secret     %(string) "         "
         options %Impelementation of oauth.options
@@ -89,14 +89,20 @@ classdef oauth  < handle
         function r = getRequestToken(consumer_auth,request_url,varargin)
             %getRequestToken Retrieves request token info
             %
-            %    r = getRequestToken(consumer_auth,request_url,varargin)
+            %   r = getRequestToken(consumer_auth,request_url,varargin)
+            %
+            %   INPUTS
+            %   ===========================================================
+            %   consumer_auth : oauth.consumer_auth
+            %   request_url   : URL to get request token, this is usually
+            %       specified by the oauth service provider
             %
             %   See Also:
             %   oauth.getAuthorizationURL
             
             
             
-            in.options = [];
+            in.options = []; %oauth.options
             in = processVarargin(in,varargin);
             
             if isempty(in.options)
@@ -118,9 +124,9 @@ classdef oauth  < handle
             %TODO: Make this a functionS
             %urlAddress = sprintf('%s?oauth_token=%s',obj.AUTH_URL,obj.oauth_request_token);
         end
-        function r = getAccessToken(consumer_auth,request_token,request_secret,verifier,varargin)
+        function r = getAccessToken(consumer_auth,access_url,request_token,request_secret,verifier,varargin)
             %
-            %    r = getAccessToken(consumer_auth,request_token,request_secret,verifier,varargin)
+            %    r = getAccessToken(consumer_auth,access_url,request_token,request_secret,verifier,varargin)
             %
             
             in.options = [];
@@ -141,7 +147,7 @@ classdef oauth  < handle
             obj.user_parameters = ...
                 oauth.params.getUserParameters(obj,{});
             
-            r = makeRequestHelper(obj,request_url,'GET');
+            r = makeRequestHelper(obj,access_url,'GET');
             
         end
     end
