@@ -3,6 +3,12 @@ classdef urlread_options < handle_light
     %   Class:
     %   oauth.urlread_options
     %
+    %   The class is a propety of oauth.options   
+    %
+    %
+    %   See Also:
+    %   oauth.urlread_request.makeRequest
+    %   oauth.options
     
     properties
         cast_output      = true;
@@ -14,10 +20,7 @@ classdef urlread_options < handle_light
     
     methods
         function s = getStruct(obj)
-            msg_id = 'MATLAB:structOnObject';
-            warning('off',msg_id)
-            s = struct(obj);
-            warning('on',msg_id)
+            s = sl.obj.toStruct(obj);
         end
     end
     

@@ -1,4 +1,4 @@
-function normParams = normalizeParams(params)
+function normalized_parameters = normalizeParams(params)
 %oauth_normalizeParams  Normalizes parameters for signature
 %
 %   Takes an input string and percent encodes it based on Section 3.4.1.3.2
@@ -17,13 +17,18 @@ function normParams = normalizeParams(params)
 %   NOTE: the parameters 'oauth_signature' &'realm' are removed if present
 %
 %   See Also: 
-%   sortCellArrayRows
-%   cellArrayToString
+%   sl.cellstr.join
+%   sl.cellstr.joinStringPairs
+%
+%   IMPROVEMENTS:
+%   -----------------------------------------------------------------------
+%   1) Add testing suite
 %
 %   http://tools.ietf.org/html/rfc5849#section-3.4.1.3.2
 
-
+%We won't include these in our signature string
 BAD_PARAMETERS = {'oauth_signature','realm'};
+
 CAT_STRING_1 = '=';
 CAT_STRING_2 = '&';
 
@@ -40,17 +45,22 @@ params = reshape(params(:),2,length(params)/2)';
 %and then sorts by the 2nd column (values)
 %This takes into account situations of duplicate names
 %but different values (this is possible for FORM 1)
-params = sortCellArrayRows(params);
+params = sl.cellstr.sortRows(params);
 
 names  = params(:,1);
 values = params(:,2);
 
-removeMask = ismember(names,BAD_PARAMETERS);
-names(removeMask)  = [];
-values(removeMask) = [];
+remove_mask         = ismember(names,BAD_PARAMETERS);
+names(remove_mask)  = [];
+values(remove_mask) = [];
 
 %3) CONCATENATION OF NAME & VALUE
-nameValPair = cellfun(@(x,y) [x CAT_STRING_1 y],names,values,'un',0);
+name_value_pairs = sl.cellstr.joinStringPairs(names,values,CAT_STRING_1);
 
 %4) PAIR CONCATENATION
-normParams = cellArrayToString(nameValPair,CAT_STRING_2,true);
+normalized_parameters = sl.cellstr.join(name_value_pairs,'d',CAT_STRING_2,'remove_empty',true); 
+
+
+end
+
+

@@ -10,11 +10,13 @@ This is an implementation of Oauth 1 for Matlab. It was originally implemented t
 
 ## Status ##
 
-Working version finished, although code dependencies not provided (see next section).
+Working version finished. Code needs a bit more cleanup and documenation.
 
 ## Getting the code to work ##
 
-There are still some dependencies in the code which are local. I need to eventually remove them. That being said, if you are interested in using the code just send me an email and I can help you get it running.
+1. Requires the [standard library](https://github.com/JimHokanson/matlab_standard_library)
+2. Add the standard library and oauth packages to the path
+3. Follow instructions below for private versus public requests
 
 ## Status ##
 
@@ -26,3 +28,34 @@ The basic functionality is present. Things I am still slowly working on are:
 4. Token handling may eventually change to require less user handling of intermediate objects.
 
 There are other things I would like to clean up about the code in terms of initialization order and error checking but they are lower priority for me now.
+
+## Public Requests ##
+
+1. Get API keys (consumer authorization) for developing apps from the service provider (Mendeley, Twitter, Netflix, etc)  
+2. Use the public request object: oauth.request.public();
+
+## Private Requests ##
+
+1. Follow step 1 from the "Public Requests" section
+2. For a particular user, get a request token so that the user can say it is alright for you to get information about them.
+
+oauth.getRequestToken
+
+3. Direct user to service website with your request token. This allows the service to link you (via the request token) and the user
+(via credentials they subsequently provide to the web service) and
+gives you the ok to work with their data. The user will generally
+get a verification string (?? Mendeley only ??) to give to you for
+getting an access token.
+
+manual step, see oauth.getAuthorizationURL
+
+4. Obtain an access token. At this point the user has agreed to
+give you access to their data. You may need a verification string
+from the user's authorization step.
+
+oauth.getAccessToken
+
+5. For future private requests (using user data) you will need to
+provide the access token from step 4. In general you will not need
+to repeat previous steps unless the token expires or the user takes
+away your access to the account.

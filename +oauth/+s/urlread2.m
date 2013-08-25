@@ -127,7 +127,7 @@ end
 
 in.CAST_OUTPUT      = true;
 in.FOLLOW_REDIRECTS = true;
-in.READ_TIMEOUT     = 10000; %If you need longer, you should know and set it as such ...
+in.READ_TIMEOUT     = 30000; %If you need longer, you should know and set it as such ...
 in.ENCODING         = '';
 in.USE_COOKIES      = true;
 in.DEPTH            = 0; %Don't set this ..., for use with redirects
@@ -220,6 +220,8 @@ end
 %NOTE: If there is an error, functions below using urlConnection, notably
 %getResponseCode, will fail as well
 try
+    %urlConnection: sun.net.www.protocol.http.HttpURLConnection
+    %sun.net.www.protocol.http.HttpURLConnection$HttpInputStream
     inputStream = urlConnection.getInputStream;
     isGood = true;
 catch ME

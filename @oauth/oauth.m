@@ -1,41 +1,8 @@
-classdef oauth  < handle
+classdef oauth  < sl.obj.handle_light
     %oauth  Implements Version 1 of OAuth
     %
-    %   Oauth outline:
-    %   ===================================================================
-    %   1) Get API keys (consumer authorization) for developing apps from
-    %   service provider (Mendeley, Twitter, Netflix, etc)
-    %   
-    %   Do this online
-    %
-    %   For public requests this step is sufficient.
-    %
-    %   oauth.request.public
-    %
-    %   2) For a particular user, get a request token so that the user
-    %   can say it is alright for you to get information about them.
-    %
-    %   oauth.getRequestToken
-    %
-    %   3) Direct user to service website with your request token. This 
-    %   allows the service to link you (via the request token) and the user
-    %   (via credentials they subsequently provide to the web service) and
-    %   gives you the ok to work with their data. The user will generally
-    %   get a verification string (?? Mendeley only ??) to give to you for
-    %   getting an access token.
-    %
-    %   manual step, see oauth.getAuthorizationURL
-    %
-    %   4) Obtain an access token. At this point the user has agreed to
-    %   give you access to their data. You may need a verification string
-    %   from the user's authorization step.
-    %
-    %   oauth.getAccessToken
-    %
-    %   5) For future private requests (using user data) you will need to
-    %   provide the access token from step 4. In general you will not need
-    %   to repeat previous steps unless the token expires or the user takes
-    %   away your access to the account.
+    %   Class:
+    %   oauth
     %
     %   CONSTRUCTORS
     %   ======================================================
@@ -47,24 +14,23 @@ classdef oauth  < handle
     %   oauth.getRequestToken
     %   oauth.getAccessToken
     
-    
-    %OUTSIDE DEPENDENCIES
-    %--------------------------------------------------
-    %   sortCellArrayRows
-    %   cellArrayToString
-    %   http_queryStringToParams
-    %   http_paramsToQuery
-    
     properties (Constant)
         VERSION = 1
     end
     
     properties
-        %Constructor
-        %---------------------------------------------------
-        consumer_authorization   %oauth.consumer_auth
-        token            %(string) Optional, only needed with private request or access_token request
-        token_secret     %(string) "         "
+        credentials@oauth.creds  %Subclass of: oauth.creds
+        % consumer_key
+        % consumer_secret
+        % token
+        % token_secret
+        %
+        %See Also:
+        %oauth.creds.public
+        %oauth.creds.request
+        %oauth.creds.access
+        %oauth.creds.private
+        
         options %Impelementation of oauth.options
         
         urlread_request     %Class oauth.urlread_request
@@ -73,8 +39,9 @@ classdef oauth  < handle
         user_parameters          %Class: oauth.params
     end
     
+    %Constructor ==========================================================
     methods (Access = protected)
-        function obj = oauth()
+        function obj = oauth(creds)
             %oauth Protected Constructor
             %
             %     See Also:
@@ -82,65 +49,57 @@ classdef oauth  < handle
             %     oauth.request.private
             %     oauth.getRequestToken
             %     oauth.getAccessToken
+            
+            obj.credentials = creds;
         end
     end
     
+    %Request and Access Token Retrieval ===================================
     methods (Static)
-        function r = getRequestToken(consumer_auth,request_url,varargin)
+        function r = getRequestToken(request_creds,request_url,varargin)
             %getRequestToken Retrieves request token info
             %
-            %   r = getRequestToken(consumer_auth,request_url,varargin)
+            %    r = oauth.getRequestToken(consumer_auth,request_url,varargin)
             %
             %   INPUTS
             %   ===========================================================
-            %   consumer_auth : oauth.consumer_auth
-            %   request_url   : URL to get request token, this is usually
-            %       specified by the oauth service provider
+            %   request_creds : 
             %
             %   See Also:
-            %   oauth.getAuthorizationURL
-            
-            
-            
-            in.options = []; %oauth.options
-            in = processVarargin(in,varargin);
+            %       oauth.getAuthorizationURL
+
+            in.options = [];
+            in = sl.in.processVarargin(in,varargin);
             
             if isempty(in.options)
                 in.options = oauth.options;
             end
             
-            obj = oauth;
+            obj = oauth(request_creds);
+            
             obj.options = in.options;
-            obj.consumer_authorization = consumer_auth;
+
             obj.authorization_parameters = ...
                 oauth.params.getAuthorizationParameters(obj,'request_token');
             obj.user_parameters = ...
                 oauth.params.getUserParameters(obj,{});
             
             r = makeRequestHelper(obj,request_url,'GET');
-            %auth_url  = getAuthorizationURL(auth_url_base,request_token)
-            
-            %TODO: Add on link for request
-            %TODO: Make this a functionS
-            %urlAddress = sprintf('%s?oauth_token=%s',obj.AUTH_URL,obj.oauth_request_token);
         end
-        function r = getAccessToken(consumer_auth,access_url,request_token,request_secret,verifier,varargin)
+        function r = getAccessToken(access_token_creds,access_url,verifier,varargin)
             %
-            %    r = getAccessToken(consumer_auth,access_url,request_token,request_secret,verifier,varargin)
+            %    r = oauth.getAccessToken(consumer_auth,request_token,request_secret,verifier,varargin)
             %
             
             in.options = [];
-            in = processVarargin(in,varargin);
+            in = sl.in.processVarargin(in,varargin);
             
             if isempty(in.options)
                 in.options = oauth.options;
             end
             
-            obj = oauth;
+            obj = oauth(access_token_creds);
             obj.options = in.options;
-            obj.token        = request_token;
-            obj.token_secret = request_secret;
-            obj.consumer_authorization = consumer_auth;
             obj.authorization_parameters = ...
                 oauth.params.getAuthorizationParameters(obj,...
                 'access_token','verifier',verifier);
@@ -161,10 +120,18 @@ classdef oauth  < handle
             %
             %   response_obj = makeRequestHelper(obj,url,http_method)
             %
+            %   INPUTS
+            %   ===========================================================
+            %   url         :
+            %   http_method :
+            %
+            %   OUTPUTS
+            %   ===========================================================
+            %   response_obj
             
             %TODO: Ensure that the authorization and user parameters have been created
             
-            obj.urlread_request = oauth.urlread_request(url,http_method,obj.options.urlread_options);
+            obj.urlread_request = oauth.urlread_request(url,http_method,obj.options);
             
             %Do stuff here ....
             authorization_header = obj.sign_request;
@@ -188,7 +155,7 @@ classdef oauth  < handle
     end
     
     %Static Methods =======================================================
-    methods (Static)
+    methods (Static,Hidden)
         outputStr = percentEncodeString(inputStr,fixForwardSlash);
         
         str2      = depercentEncode(str);
@@ -204,17 +171,6 @@ classdef oauth  < handle
 %             if copyToClipboard
 %                 clipboard('copy',auth_url)
 %             end
-        end
-        function output = get_SHA1(data)
-            %get_SHA1 Creates message digest using SHA-1 hash function
-            %
-            %    output = get_SHA1(data)
-            
-            %data = 'The quick brown fox jumps over the lazy dog';
-            digest = org.apache.commons.codec.digest.DigestUtils;
-            temp   = lower(dec2hex(typecast(digest.sha(data),'uint8')))';
-            output = temp(:)';
-            
         end
     end
     
