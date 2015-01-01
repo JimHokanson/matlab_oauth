@@ -18,6 +18,8 @@ classdef options < handle_light
         number_to_string_fhandle = @int2str; %Function used to convert #s to string
         convert_params_to_utf8   = true; 
         
+        extra_oauth_params = {}; %(cell, prop/value pairs)
+        
         %urlread 
         %------------------------------------------------------------------
         urlread_options  %Class: oauth.urlread_options

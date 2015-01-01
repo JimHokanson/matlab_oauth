@@ -42,9 +42,13 @@ classdef urlread_request < handle_light
             %   ?? - how to handle body input?
             
             [str,header] = user_parameters_obj.getQueryString();
+
+            urlread_options = obj.oauth_options.urlread_options;
             
-            headers = authorization_header;
-            body      = '';
+            body    = urlread_options.body;
+            headers = urlread_options.headers;
+            
+            headers = [authorization_header headers];
             final_url = obj.url;
             %URL HANDLING
             %----------------------------------
@@ -53,11 +57,14 @@ classdef urlread_request < handle_light
             end
             
             if strcmp(obj.http_method,'POST')
+                if ~isempty(body)
+                    error('Body cannot be specified for post method')
+                end
                 body    = str;
                 headers = [header obj.auth_header];
             end
             
-            s = obj.oauth_options.urlread_options.getStruct;
+            s = urlread_options.getStruct;
             
             [output,extras] = oauth.s.urlread2(final_url,obj.http_method,body,headers,s);
             

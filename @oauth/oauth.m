@@ -131,6 +131,14 @@ classdef oauth  < sl.obj.handle_light
             
             %TODO: Ensure that the authorization and user parameters have been created
             
+            %This is a bit of a hack, I really need to work out this
+            %workflow
+            
+            opts = obj.options;
+            if ~isempty(opts.extra_oauth_params)
+               obj.authorization_parameters.addParams(opts.extra_oauth_params);
+            end
+            
             obj.urlread_request = oauth.urlread_request(url,http_method,obj.options);
             
             %Do stuff here ....
